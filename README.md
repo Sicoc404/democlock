@@ -1,90 +1,120 @@
 # Telegram Clock Bot
 
-A Telegram bot for managing employee clock-in/clock-out, leave applications, and expense claims.
+A Telegram bot for managing employee clock-in/clock-out, OT, leave, expense claims, and monthly salary payments with PDF reporting.
 
 ## Features
 
-- 👨‍💼 Employee Management
-  - Clock in/out tracking
-  - Leave application
-  - Expense claims with receipt upload
-  - Working hours calculation
+### 👨‍💼 Employee Tools
 
-- 💰 Financial Management
-  - Balance tracking
-  - Expense claims processing
-  - Salary management
-  - Top-up functionality
+* Clock in with live GPS location (uses Google Maps API)
+* Clock out with worked-hour auto calculation
+* Apply off-day (/offday)
+* Submit expense claims with receipt upload
+* Submit OT (overtime) entries
 
-- 📊 Reporting
-  - PDF report generation
-  - Daily attendance checking
-  - Claims overview
-  - Balance overview
+### 💰 Admin Management
 
-## Setup
+* Set monthly salary for each worker
+* Approve salary and claim payments (/paid)
+* View monthly summaries (/checkstate, /previousreport)
 
-1. Install dependencies:
+### 📊 Reporting
+
+* One-click PDF generation of:
+
+  * Work Hours Summary
+  * Salary Summary
+  * All Clock-in/OT/Claims Data
+
+### 🔐 Permissions
+
+* Admin-only commands secured via `ADMIN_IDS`
+
+## Deployment Instructions
+
+### 1. Install dependencies:
+
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Set environment variables in `.env` file or your deployment platform:
-```bash
-# Required environment variables:
-DATABASE_URL=your_postgresql_database_url
+### 2. Set environment variables (`.env`):
+
+```env
+# Required:
+DATABASE_URL=your_postgresql_connection_string
 TOKEN=your_telegram_bot_token
 ADMIN_IDS=comma_separated_admin_ids
 
-# See .env.example for all available options
+# Optional:
+GOOGLE_API_KEY=your_google_maps_api_key
+DEFAULT_HOURLY_RATE=20.0
+DEFAULT_MONTHLY_SALARY=3500.0
 ```
 
-3. Initialize database:
+### 3. Initialize database (only once):
+
 ```bash
 python init_db.py
 ```
 
-4. Run the bot:
+### 4. Run the bot locally:
+
 ```bash
 python clock_bot.py
 ```
 
-## Commands
+If deployed on Render, webhook will auto-configure from `RENDER_EXTERNAL_URL`.
 
-### User Commands
-- `/start` - Start the bot
-- `/clockin` - Clock in for work
-- `/clockout` - Clock out from work
-- `/offday` - Mark a day as leave
-- `/claim` - Submit an expense claim
+## Telegram Commands
 
-### Admin Commands
-- `/balance` - Check all drivers' balances
-- `/check` - Check today's attendance
-- `/PDF` - Generate PDF reports
-- `/topup` - Top up driver's balance
-- `/viewclaims` - View recent claims
-- `/salary` - Set driver's salary
-- `/paid` - View driver's work summary and payment details
+### 🧑 User Commands
+
+* `/start` – Show welcome & command guide
+* `/clockin` – Share location to clock in
+* `/clockout` – End work and calculate hours
+* `/offday` – Mark current day as leave
+* `/claim` – Submit a photo claim
+* `/OT` – Record overtime
+
+### 👮 Admin Commands
+
+* `/checkstate` – View daily stats
+* `/salary` – Set salary per worker
+* `/paid` – Approve salary & mark as paid
+* `/topup` – Manually add balance
+* `/viewclaims` – View 30-day claims
+* `/PDF` – Export report
+* `/previousreport` – View prior month data
 
 ## Database Schema
 
-The bot uses PostgreSQL with the following tables:
-- `drivers` - Store driver information
-- `clock_logs` - Store clock in/out records
-- `claims` - Store expense claims
-- `topups` - Store balance top-up records
+This bot uses PostgreSQL with tables:
 
-## Security
+* `drivers` – user & salary info
+* `clock_logs` – daily clock in/out + leave
+* `claims` – uploaded claims + photos
+* `salary_payments` – salary issuance log
+* `ot_logs` – overtime logs
+* `monthly_reports` – worker summaries
 
-- Admin access is controlled via ADMIN_IDS environment variable
-- Database credentials are managed via environment variables
-- Sensitive data is not stored in the code
+## Security Checklist
 
-## Contributing
+* ✅ `.env` with restricted API key
+* ✅ ADMIN\_IDS filters admin-only access
+* ✅ Logs errors but hides sensitive info
+* ✅ Can run behind Gunicorn for production
 
-Feel free to submit issues and enhancement requests!
+## Demo Deployment Tips
+
+* Set `IS_DEMO=True` to limit commands (optional in code)
+* Use Nominatim if no Google API is available
+* Budget API usage with quota alerts
 
 ## License
 
-MIT License
+MIT License — build freely, credit appreciated!
+
+## Credits
+
+Created by \[your name]. Contributions welcome!
