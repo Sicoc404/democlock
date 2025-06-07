@@ -2559,3 +2559,7 @@ def previousreport_select_month(update, context):
     except (ValueError, IndexError):
         update.message.reply_text("❌ Invalid selection. Please select a month from the keyboard.")
         return PREVIOUSREPORT_SELECT_MONTH
+
+@app.route("/", methods=["GET"])
+def index():
+    return "✅ ClockBot is deployed and working. Use /webhook for Telegram."
